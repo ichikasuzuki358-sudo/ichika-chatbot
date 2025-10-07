@@ -1,0 +1,383 @@
+index.html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イチカ - P-DRESSチャットボット</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #fff5f9 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 500px;
+            height: 80vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(255, 105, 180, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+
+        .message.bot .message-bubble {
+            background: #ff69b4;
+            color: white;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user .message-bubble {
+            background: #e0e0e0;
+            color: #333;
+            border-bottom-right-radius: 4px;
+        }
+
+        .article-link {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .article-link:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ffb6d9;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            border-color: #ff69b4;
+        }
+
+        .send-button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin: 0 2px;
+            border-radius: 50%;
+            background: white;
+            animation: pulse 1.4s infinite ease-in-out;
+        }
+
+        .loading:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes pulse {
+            0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+            40% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>🌸 イチカ 🌸</h1>
+            <p>P-DRESSのおすすめ記事をご案内します</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                <div class="message-bubble">
+                    こんにちは！私はイチカです✨<br>
+                    P-DRESSの記事の中から、あなたにぴったりのおすすめ記事をご紹介しますね！<br><br>
+                    恋愛、セックス、ライフスタイルなど、気になることを教えてください😊
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="userInput" placeholder="メッセージを入力..." autocomplete="off">
+            <button class="send-button" id="sendButton">送信</button>
+        </div>
+    </div>
+
+    <script>
+        const articles = [
+            {
+                title: "不倫経験者が直面する「自分をないがしろにする」という現実",
+                url: "https://p-dress.jp/articles/4836",
+                category: "恋愛",
+                keywords: ["不倫", "恋愛", "既婚者", "関係", "浮気"]
+            },
+            {
+                title: "【女性人気】おすすめアダルトグッズ厳選ランキング・専門家監修",
+                url: "https://p-dress.jp/articles/13162",
+                category: "セックス",
+                keywords: ["アダルトグッズ", "セックス", "セルフプレジャー", "快感", "グッズ", "おもちゃ"]
+            },
+            {
+                title: "床上手とは!? BETSYさんが助言する「令和の床上手」になる方法",
+                url: "https://p-dress.jp/articles/13110",
+                category: "セックス",
+                keywords: ["床上手", "セックス", "テクニック", "関係", "上手"]
+            },
+            {
+                title: "【セックス相性】とは？ 体の相性がいいと感じる相手の特徴を解説",
+                url: "https://p-dress.jp/articles/9233",
+                category: "セックス",
+                keywords: ["相性", "セックス", "パートナー", "関係", "体"]
+            }
+        ];
+
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+
+        function addMessage(text, isUser, articleUrl = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.innerHTML = text;
+            
+            if (articleUrl && !isUser) {
+                const link = document.createElement('a');
+                link.href = articleUrl;
+                link.target = '_blank';
+                link.className = 'article-link';
+                link.textContent = '📖 記事を読む';
+                bubble.appendChild(link);
+            }
+            
+            messageDiv.appendChild(bubble);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showLoading() {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot';
+            messageDiv.id = 'loading-message';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.innerHTML = '<span class="loading"></span><span class="loading"></span><span class="loading"></span>';
+            
+            messageDiv.appendChild(bubble);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeLoading() {
+            const loading = document.getElementById('loading-message');
+            if (loading) loading.remove();
+        }
+
+        function findBestArticle(userMessage) {
+            const lowerMessage = userMessage.toLowerCase();
+            
+            let bestMatch = null;
+            let maxScore = 0;
+            
+            articles.forEach(article => {
+                let score = 0;
+                article.keywords.forEach(keyword => {
+                    if (lowerMessage.includes(keyword)) {
+                        score += 2;
+                    }
+                });
+                
+                if (lowerMessage.includes(article.category)) {
+                    score += 3;
+                }
+                
+                if (score > maxScore) {
+                    maxScore = score;
+                    bestMatch = article;
+                }
+            });
+            
+            if (!bestMatch) {
+                bestMatch = articles[Math.floor(Math.random() * articles.length)];
+            }
+            
+            return bestMatch;
+        }
+
+        function generateResponse(userMessage) {
+            const article = findBestArticle(userMessage);
+            
+            const responses = [
+                `そのお悩み、わかります！こちらの記事がおすすめですよ💕<br><br>「${article.title}」<br><br>きっと参考になると思います✨`,
+                `いい質問ですね！この記事が役立つと思います😊<br><br>「${article.title}」<br><br>ぜひ読んでみてくださいね！`,
+                `その話題なら、こちらの記事がぴったりです🌸<br><br>「${article.title}」<br><br>きっと新しい発見があるはずです💫`,
+                `それについて、素敵な記事がありますよ✨<br><br>「${article.title}」<br><br>あなたの役に立つと思います！`,
+            ];
+            
+            const response = responses[Math.floor(Math.random() * responses.length)];
+            
+            return { text: response, article: article };
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ja-JP';
+                utterance.rate = 1.0;
+                utterance.pitch = 1.2;
+                
+                const voices = speechSynthesis.getVoices();
+                const japaneseVoice = voices.find(voice => 
+                    voice.lang === 'ja-JP' && (voice.name.includes('female') || voice.name.includes('Female'))
+                ) || voices.find(voice => voice.lang === 'ja-JP');
+                
+                if (japaneseVoice) {
+                    utterance.voice = japaneseVoice;
+                }
+                
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        async function handleUserMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+            
+            addMessage(message, true);
+            userInput.value = '';
+            sendButton.disabled = true;
+            
+            showLoading();
+            
+            await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
+            
+            removeLoading();
+            
+            const { text, article } = generateResponse(message);
+            addMessage(text, false, article.url);
+            
+            const cleanText = text.replace(/<br>/g, ' ').replace(/<[^>]*>/g, '').replace(/✨|💕|😊|🌸|💫|📖/g, '');
+            speak(cleanText);
+            
+            sendButton.disabled = false;
+        }
+
+        sendButton.addEventListener('click', handleUserMessage);
+        
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleUserMessage();
+            }
+        });
+
+        if ('speechSynthesis' in window) {
+            speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = () => {
+                speechSynthesis.getVoices();
+            };
+        }
+    </script>
+</body>
+</html>
