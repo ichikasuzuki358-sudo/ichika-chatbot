@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>イチカ - P-DRESSチャットボット</title>
+    <title>DRESSチャットボット</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
-            background: linear-gradient(135deg, #ffeef8 0%, #fff5f9 100%);
+            background: linear-gradient(135deg, #fff5f7 0%, #ffffff 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -27,27 +27,28 @@
             height: 80vh;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(255, 105, 180, 0.2);
+            box-shadow: 0 10px 40px rgba(248, 72, 94, 0.15);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
         .chat-header {
-            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            background: linear-gradient(135deg, #f8485e 0%, #e63946 100%);
             color: white;
             padding: 20px;
             text-align: center;
         }
 
         .chat-header h1 {
-            font-size: 24px;
+            font-size: 22px;
             margin-bottom: 5px;
+            font-weight: bold;
         }
 
         .chat-header p {
-            font-size: 14px;
-            opacity: 0.9;
+            font-size: 13px;
+            opacity: 0.95;
         }
 
         .chat-messages {
@@ -82,7 +83,7 @@
         }
 
         .message.bot .message-bubble {
-            background: #ff69b4;
+            background: #f8485e;
             color: white;
             border-bottom-left-radius: 4px;
         }
@@ -121,7 +122,7 @@
         .chat-input {
             flex: 1;
             padding: 12px;
-            border: 2px solid #ffb6d9;
+            border: 2px solid #ffc9d1;
             border-radius: 25px;
             font-size: 14px;
             outline: none;
@@ -129,12 +130,12 @@
         }
 
         .chat-input:focus {
-            border-color: #ff69b4;
+            border-color: #f8485e;
         }
 
         .send-button {
             padding: 12px 24px;
-            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            background: linear-gradient(135deg, #f8485e 0%, #e63946 100%);
             color: white;
             border: none;
             border-radius: 25px;
@@ -179,14 +180,14 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <h1>🌸 イチカ 🌸</h1>
+            <h1>DRESSチャットボット</h1>
             <p>P-DRESSのおすすめ記事をご案内します</p>
         </div>
         
         <div class="chat-messages" id="chatMessages">
             <div class="message bot">
                 <div class="message-bubble">
-                    こんにちは！私はイチカです✨<br>
+                    こんにちは！DRESSチャットボットです✨<br>
                     P-DRESSの記事の中から、あなたにぴったりのおすすめ記事をご紹介しますね！<br><br>
                     恋愛、セックス、ライフスタイルなど、気になることを教えてください😊
                 </div>
@@ -308,7 +309,7 @@
             
             const responses = [
                 `そのお悩み、わかります！こちらの記事がおすすめですよ💕<br><br>「${article.title}」<br><br>きっと参考になると思います✨`,
-                `いい質問ですね！この記事が役立つと思います😊<br><br>「${article.title}」<br><br>ぜひ読んでみてくださいね！`,
+                `この記事が役立つと思います😊<br><br>「${article.title}」<br><br>ぜひ読んでみてくださいね！`,
                 `その話題なら、こちらの記事がぴったりです🌸<br><br>「${article.title}」<br><br>きっと新しい発見があるはずです💫`,
                 `それについて、素敵な記事がありますよ✨<br><br>「${article.title}」<br><br>あなたの役に立つと思います！`,
             ];
